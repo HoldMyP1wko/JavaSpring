@@ -8,6 +8,7 @@ public abstract class Vehicle{
     String typeOfVehicle;
 
     public Vehicle(String typeOfVehicle,String id, String brand, String model, int year, double price, boolean rented) {
+        this.typeOfVehicle = typeOfVehicle;
         this.id = id;
         this.brand = brand;
         this.model = model;
@@ -34,12 +35,12 @@ public abstract class Vehicle{
     }
 
     public void setRented(boolean b){
-
+        this.isRented = b;
     }
 
     public String toCSV(){
-        return id + ";" + this.brand + ";" + this.model +  ";" + this.year
-                + ";" + this.price + ";";
+        return  this.typeOfVehicle + ";" + this.id + ";" + this.brand + ";" + this.model +  ";" + this.year
+                + ";" + this.price + ";" + this.isRented;
     }
 
     @Override
@@ -51,7 +52,7 @@ public abstract class Vehicle{
                 ", year=" + year +
                 ", price=" + price +
                 ", isRented=" + isRented +
-                ", typeOfVehicle=" + typeOfVehicle +
+                ", typeOfVehicle='" + typeOfVehicle + '\'' +
                 '}';
     }
 }

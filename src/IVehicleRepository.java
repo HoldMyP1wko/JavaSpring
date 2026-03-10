@@ -6,7 +6,7 @@ public interface IVehicleRepository {
     public void rentVehicle(Vehicle vehicle);
     public Vehicle returnVehicle(Vehicle vehicle);
     public List<Vehicle> getVehicles();
-    public void save(File file);
+    public void save();
     public void load(File file);
 
 }

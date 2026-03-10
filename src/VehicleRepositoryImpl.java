@@ -1,7 +1,4 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -16,12 +13,13 @@ public class VehicleRepositoryImpl implements IVehicleRepository{
 
     @Override
     public void rentVehicle(Vehicle vehicle) {
-
+        vehicle.isRented = true;
+        save();
     }
 
     @Override
     public Vehicle returnVehicle(Vehicle vehicle) {
-        return null;
+        return vehicle;
     }
 
     @Override
@@ -35,11 +33,12 @@ public class VehicleRepositoryImpl implements IVehicleRepository{
     }
 
     @Override
-    public void save(File file) {
-        try (FileWriter writer = new FileWriter("cars.txt")){
+    public void save() {
+        try (BufferedWriter writer = new BufferedWriter(new BufferedWriter(new FileWriter("vehicles.txt")))){
             if (!vehiclesList.isEmpty()){
                 for(Vehicle v : vehiclesList){
                     writer.write(v.toCSV());
+                    writer.newLine();
                 }
             }
         } catch (IOException e) {
