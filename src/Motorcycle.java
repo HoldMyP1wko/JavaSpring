@@ -3,7 +3,18 @@ public class Motorcycle extends Vehicle{
     String typeOfVehicle;
 
     public Motorcycle(String typeOfVehicle, String id, String brand, String model, int year, double price, boolean rented, DrivingLicense drivingLicense) {
-        super(id, brand, model, year, price, rented);
+        super(typeOfVehicle,id, brand, model, year, price, rented);
         this.drivingLicense = drivingLicense;
+    }
+
+    public Motorcycle(Motorcycle motorcycle){
+        super(motorcycle);
+        this.drivingLicense = motorcycle.drivingLicense;
+        this.typeOfVehicle = motorcycle.typeOfVehicle;
+    }
+
+    @Override
+    public Vehicle deepCopy() {
+        return new Motorcycle(this);
     }
 }

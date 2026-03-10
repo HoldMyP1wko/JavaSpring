@@ -5,8 +5,9 @@ public abstract class Vehicle{
     int year;
     double price;
     boolean isRented;
+    String typeOfVehicle;
 
-    public Vehicle(String id, String brand, String model, int year, double price, boolean rented) {
+    public Vehicle(String typeOfVehicle,String id, String brand, String model, int year, double price, boolean rented) {
         this.id = id;
         this.brand = brand;
         this.model = model;
@@ -15,12 +16,8 @@ public abstract class Vehicle{
         this.isRented = rented;
     }
 
-    public String toCSV(){
-        return id + ";" + this.brand + ";" + this.model +  ";" + this.year
-                + ";" + this.price + ";";
-    }
-
     public Vehicle(Vehicle vehicle){
+        this.typeOfVehicle = vehicle.typeOfVehicle;
         this.id = vehicle.id;
         this.brand = vehicle.brand;
         this.model = vehicle.model;
@@ -29,10 +26,32 @@ public abstract class Vehicle{
         this.isRented = vehicle.isRented;
     }
 
-//    @Override
-//    public String toString(){
-//
-//    }
+    public abstract Vehicle deepCopy();
 
 
+    public boolean isRented() {
+        return isRented;
+    }
+
+    public void setRented(boolean b){
+
+    }
+
+    public String toCSV(){
+        return id + ";" + this.brand + ";" + this.model +  ";" + this.year
+                + ";" + this.price + ";";
+    }
+
+    @Override
+    public String toString() {
+        return "Vehicle{" +
+                "id='" + id + '\'' +
+                ", brand='" + brand + '\'' +
+                ", model='" + model + '\'' +
+                ", year=" + year +
+                ", price=" + price +
+                ", isRented=" + isRented +
+                ", typeOfVehicle=" + typeOfVehicle +
+                '}';
+    }
 }

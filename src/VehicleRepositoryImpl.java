@@ -29,9 +29,9 @@ public class VehicleRepositoryImpl implements IVehicleRepository{
         List<Vehicle> copiedVehicle = new ArrayList<>();
 
         for (Vehicle v : vehiclesList){
-            copiedVehicle.add(new Car());
+            copiedVehicle.add(v.deepCopy());
         }
-
+        return copiedVehicle;
     }
 
     @Override
