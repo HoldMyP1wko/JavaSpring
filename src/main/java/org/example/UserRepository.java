@@ -9,6 +9,10 @@ import java.util.List;
 public class UserRepository implements IUserRepository {
     private final List<User> usersList = new ArrayList<>();
 
+    public UserRepository(){
+        load();
+    }
+
     @Override
     public User getUser(User user) {
         return new User(user);
@@ -19,7 +23,7 @@ public class UserRepository implements IUserRepository {
         List<User> copiedUsers = new ArrayList<>();
 
             for (User u : usersList){
-                usersList.add(new User(u));
+                copiedUsers.add(new User(u));
             }
             return copiedUsers;
     }
@@ -28,9 +32,9 @@ public class UserRepository implements IUserRepository {
     public void save() {
         try (BufferedWriter br = new BufferedWriter(new FileWriter("src/main/resources/users.csv", true))) {
             for (User u : usersList) {
-                br.write(u.login + ";");
-                br.write(Crypt.crypt(u.password + ";"));
-                br.write(u.role + ";");
+                br.write(u.getLogin() + ";");
+                br.write(Crypt.crypt(u.getPassword() + ";"));
+                br.write(u.getRole() + ";");
                 if (u.getRentedVehicle() != null){
                     br.write(u.getRentedVehicle() + ";");
                 }
@@ -47,7 +51,7 @@ public class UserRepository implements IUserRepository {
             String line;
             while((line = br.readLine()) != null){
                 String[] parts = line.split(";", -1);
-                usersList.add(new User(parts[0], parts[1], parts[2],parts[3]));
+                usersList.add(new User(parts[0], parts[1], Role.toEnum(parts[2]),parts[3]));
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

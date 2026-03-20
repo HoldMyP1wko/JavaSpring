@@ -1,18 +1,16 @@
 package org.example;
 
-import org.apache.commons.codec.digest.Crypt;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.util.List;
-
 public class User {
-    String login;
-    String password;
-    String role;
-    private String rentedVehicle;
+    private final String login;
+    private final String password;
+    private Role role;
+    private String rentedVehicle = null;
 
-    public User(String login, String password, String role, String rentedVehicle) {
+    public Role getRole() {
+        return role;
+    }
+
+    public User(String login, String password, Role role, String rentedVehicle) {
         this.login = login;
         this.password = password;
         this.role = role;
@@ -26,6 +24,20 @@ public class User {
         this.rentedVehicle = user.rentedVehicle;
     }
 
+    public User(String login, String password, Role role) {
+        this.login = login;
+        this.password = password;
+        this.role = role;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
     public void setRentedVehicle(String rentedVehicle) {
         this.rentedVehicle = rentedVehicle;
     }
@@ -34,17 +46,14 @@ public class User {
         return rentedVehicle;
     }
 
-    static public boolean login(String login, String password){
-        UserRepository u = new UserRepository();
-        List<User> uUsersList = u.getUsers();
-        if (uUsersList.equals(u)){
-
-        }
+    @Override
+    public String toString() {
+        return "User{" +
+                "login='" + login + '\'' +
+                ", password='" + password + '\'' +
+                ", role='" + role + '\'' +
+                ", rentedVehicle='" + rentedVehicle+ '\'' +
+                '}';
     }
-
-    static private void rentVehicle(User user){
-
-    }
-
 
 }

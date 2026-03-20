@@ -8,6 +8,7 @@ import java.util.Scanner;
 
 public class VehicleRepository implements IVehicleRepository {
     private final List<Vehicle> vehiclesList = new ArrayList<>();
+
     @Override
     public void rentVehicle(Vehicle vehicle) {
 
@@ -20,14 +21,18 @@ public class VehicleRepository implements IVehicleRepository {
 
     @Override
     public List<Vehicle> getVehicles() {
-        return List.of();
+        List<Vehicle> copiedVehicle = new ArrayList<>();
+
+        for (Vehicle v : vehiclesList){
+            copiedVehicle.add(v.deepCopy());
+        }
+        return copiedVehicle;
     }
 
     @Override
     public void save() {
 
     }
-
     public void load(File file) {
     try (Scanner scanner = new Scanner (file)){
         while(scanner.hasNextLine()){
