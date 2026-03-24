@@ -10,20 +10,40 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Witaj w systemie wypożyczalni!");
-        System.out.print("Podaj login: ");
-        String login = scanner.nextLine();
-        System.out.print("Podaj hasło: ");
-        String password = scanner.nextLine();
+        User currentUser = null;
 
-        User currentUser = auth.login(login, password);
+        while (currentUser == null) {
+            System.out.println("\n1. Zaloguj się");
+            System.out.println("2. Zarejestruj nowe konto");
+            System.out.println("0. Wyjście");
+            System.out.print("Wybierz opcję: ");
+            String startChoice = scanner.nextLine();
 
-        if (currentUser == null) {
-            System.out.println("Nieprawidłowe dane logowania.");
-            return;
+            if (startChoice.equals("0")) return;
+
+            System.out.print("Podaj login: ");
+            String login = scanner.nextLine();
+            System.out.print("Podaj hasło: ");
+            String password = scanner.nextLine();
+
+            if (startChoice.equals("1")) {
+                currentUser = auth.login(login, password);
+                if (currentUser == null) {
+                    System.out.println("Nieprawidłowe dane logowania!");
+                }
+            } else if (startChoice.equals("2")) {
+                boolean success = auth.register(login, password);
+                if (success) {
+                    System.out.println("Zarejestrowano pomyślnie! Możesz się teraz zalogować.");
+                } else {
+                    System.out.println("Błąd: Taki login już istnieje w systemie.");
+                }
+            } else {
+                System.out.println("Nieprawidłowa opcja.");
+            }
         }
 
-        System.out.println("Zalogowano pomyślnie jako: " + currentUser.getRole());
-        System.out.println("Załadowano pojazdów: " + vehicleRepository.getVehicles().size());
+        System.out.println("\nZalogowano pomyślnie jako: " + currentUser.getRole());
 
         boolean running = true;
         while (running) {
@@ -33,6 +53,7 @@ public class Main {
                 System.out.println("2. Usuń pojazd");
                 System.out.println("3. Przeglądaj listę pojazdów");
                 System.out.println("4. Wyświetl użytkowników i ich pojazdy");
+                System.out.println("5. Usuń użytkownika");
                 System.out.println("0. Wyjście");
                 System.out.print("Wybór: ");
 
@@ -71,6 +92,19 @@ public class Main {
                                 if (v != null) System.out.print(" (" + v.getBrand() + " " + v.getModel() + ")");
                             }
                             System.out.println();
+                        }
+                    case "5":
+                        System.out.print("Podaj login użytkownika do usunięcia: ");
+                        String loginToRemove = scanner.nextLine();
+                        if (loginToRemove.equals(currentUser.getLogin())) {
+                            System.out.println("Nie możesz usunąć samego siebie!");
+                        } else {
+                            boolean removed = userRepository.removeUser(loginToRemove);
+                            if (removed) {
+                                System.out.println("Pomyślnie usunięto użytkownika.");
+                            } else {
+                                System.out.println("Błąd: Użytkownik nie istnieje lub posiada obecnie wypożyczony pojazd.");
+                            }
                         }
                         break;
                     case "0":

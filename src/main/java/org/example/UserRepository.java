@@ -42,7 +42,32 @@ public class UserRepository implements IUserRepository {
     }
 
     @Override
-    public void save() {
+    public void addUser(User user) {
+        users.add(user.copy());
+        save();
+    }
+
+    @Override
+    public boolean removeUser(String login) {
+        User userToRemove = users.stream()
+                .filter(u -> u.getLogin().equals(login))
+                .findFirst()
+                .orElse(null);
+
+        if (userToRemove == null) {
+            return false;
+        }
+
+        if (userToRemove.getRentedVehicleId() != null && !userToRemove.getRentedVehicleId().isEmpty()) {
+            return false;
+        }
+
+        users.remove(userToRemove);
+        save();
+        return true;
+    }
+
+    private void save() {
         try (PrintWriter pw = new PrintWriter(new FileWriter(FILE_NAME))) {
             for (User u : users) {
                 pw.println(u.toCSV());
@@ -52,8 +77,7 @@ public class UserRepository implements IUserRepository {
         }
     }
 
-    @Override
-    public void load() {
+    private void load() {
         users.clear();
         File file = new File(FILE_NAME);
         if (!file.exists()) return;

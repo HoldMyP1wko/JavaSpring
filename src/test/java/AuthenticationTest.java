@@ -28,9 +28,19 @@ public class AuthenticationTest {
             }
 
             @Override public List<User> getUsers() { return null; }
-            @Override public void save() {}
-            @Override public void load() {}
+            public void save() {}
+            public void load() {}
             @Override public void update(User user) {}
+
+            @Override
+            public void addUser(User user) {
+
+            }
+
+            @Override
+            public boolean removeUser(String login) {
+                return false;
+            }
         };
 
         authentication = new Authentication(mockUserRepository);

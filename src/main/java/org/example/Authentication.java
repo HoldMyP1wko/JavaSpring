@@ -1,5 +1,4 @@
 package org.example;
-
 import org.apache.commons.codec.digest.DigestUtils;
 
 public class Authentication {
@@ -18,5 +17,17 @@ public class Authentication {
             }
         }
         return null;
+    }
+
+    public boolean register(String login, String password) {
+        if (userRepository.getUser(login) != null) {
+            return false;
+        }
+
+        String hashedPassword = DigestUtils.sha256Hex(password);
+        User newUser = new User(login, hashedPassword, Role.USER, null);
+
+        userRepository.addUser(newUser);
+        return true;
     }
 }

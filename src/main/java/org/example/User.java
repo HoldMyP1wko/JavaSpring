@@ -1,9 +1,9 @@
 package org.example;
 
 public class User {
-    private String login;
-    private String password; // Hash
-    private Role role;
+    private final String login;
+    private final String password; // Hash
+    private final Role role;
     private String rentedVehicleId;
 
     public User(String login, String password, Role role, String rentedVehicleId) {

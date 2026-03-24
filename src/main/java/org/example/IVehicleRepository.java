@@ -12,6 +12,4 @@ public interface IVehicleRepository {
     Vehicle getVehicle(String id);
     void add(Vehicle vehicle);
     void remove(String vehicleId);
-    void save();
-    void load();
 }
