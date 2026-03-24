@@ -6,84 +6,95 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+
 public class VehicleRepository implements IVehicleRepository {
-    private final List<Vehicle> vehiclesList = new ArrayList<>();
+    private List<Vehicle> vehicles = new ArrayList<>();
+    private final String FILE_NAME = "vehicles.csv";
 
-    @Override
-    public void rentVehicle(Vehicle vehicle) {
-
+    public VehicleRepository() {
+        load();
     }
 
     @Override
-    public Vehicle returnVehicle(Vehicle vehicle) {
-        return null;
+    public void rentVehicle(String vehicleId) {
+        Vehicle v = getVehicleInternal(vehicleId);
+        if (v != null && !v.isRented()) {
+            v.setRented(true);
+            save();
+        }
+    }
+
+    @Override
+    public void returnVehicle(String vehicleId) {
+        Vehicle v = getVehicleInternal(vehicleId);
+        if (v != null && v.isRented()) {
+            v.setRented(false);
+            save();
+        }
     }
 
     @Override
     public List<Vehicle> getVehicles() {
-        List<Vehicle> copiedVehicle = new ArrayList<>();
-
-        for (Vehicle v : vehiclesList){
-            copiedVehicle.add(v.deepCopy());
+        List<Vehicle> copyList = new ArrayList<>();
+        for (Vehicle v : vehicles) {
+            copyList.add(v.copy());
         }
-        return copiedVehicle;
+        return copyList;
+    }
+
+    @Override
+    public Vehicle getVehicle(String id) {
+        Vehicle v = getVehicleInternal(id);
+        return v != null ? v.copy() : null;
+    }
+
+    private Vehicle getVehicleInternal(String id) {
+        return vehicles.stream().filter(v -> v.getId().equals(id)).findFirst().orElse(null);
+    }
+
+    @Override
+    public void add(Vehicle vehicle) {
+        vehicles.add(vehicle.copy());
+        save();
+    }
+
+    @Override
+    public void remove(String vehicleId) {
+        vehicles.removeIf(v -> v.getId().equals(vehicleId));
+        save();
     }
 
     @Override
     public void save() {
-
-    }
-    public void load(File file) {
-    try (Scanner scanner = new Scanner (file)){
-        while(scanner.hasNextLine()){
-            String[] parts = scanner.nextLine().split(";");
-            String className = parts[0];
-            if (className.equals(Car.class.getName().toUpperCase())){
-                String id = parts[1];
-                String brand = parts[2];
-                String model = parts[3];
-                int year = Integer.parseInt(parts[4]);
-                double price = Double.parseDouble(parts[5]);
-                boolean isRented = Boolean.parseBoolean(parts[6]);
-
-                Car car = new Car(className, id, brand, model, year, price, isRented);
-
-                vehiclesList.add(car);
-
-            } else {
-                className = Motorcycle.class.getName().toUpperCase();
-                String id = parts[1];
-                String brand = parts[2];
-                String model = parts[3];
-                int year = Integer.parseInt(parts[4]);
-                double price = Double.parseDouble(parts[5]);
-                boolean isRented = Boolean.parseBoolean(parts[6]);
-                DrivingLicense drivingLicense = DrivingLicense.valueOf(parts[7]);
-
-                Motorcycle motorcycle = new Motorcycle(className, id, brand, model, year,price, isRented, drivingLicense);
-
-                vehiclesList.add(motorcycle);
+        try (PrintWriter pw = new PrintWriter(new FileWriter(FILE_NAME))) {
+            for (Vehicle v : vehicles) {
+                pw.println(v.toCSV());
             }
+        } catch (IOException e) {
+            System.err.println("Błąd zapisu pojazdów: " + e.getMessage());
         }
-    } catch (FileNotFoundException e) {
-        throw new RuntimeException(e);
-    }
-}
-
-    @Override
-    public void add() {
-
     }
 
     @Override
-    public void remove() {
+    public void load() {
+        vehicles.clear();
+        File file = new File(FILE_NAME);
 
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] p = line.split(";");
+                if (p[0].equalsIgnoreCase("Car")) {
+                    vehicles.add(new Car(p[1], p[2], p[3], Integer.parseInt(p[4]), Double.parseDouble(p[5]), Boolean.parseBoolean(p[6])));
+                } else if (p[0].equalsIgnoreCase("Motorcycle")) {
+                    vehicles.add(new Motorcycle(p[1], p[2], p[3], Integer.parseInt(p[4]), Double.parseDouble(p[5]), Boolean.parseBoolean(p[6]), p[7]));
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Błąd odczytu pojazdów: " + e.getMessage());
+        }
     }
-
-    @Override
-    public Vehicle getVehicle(Vehicle vehicle) {
-    return null;
 }
-
-}
-

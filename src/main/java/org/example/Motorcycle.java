@@ -1,22 +1,25 @@
 package org.example;
 
 public class Motorcycle extends Vehicle {
-    DrivingLicense drivingLicense;
-    String typeOfVehicle;
+    private String category;
 
-    public Motorcycle(String typeOfVehicle, String id, String brand, String model, int year, double price, boolean rented, DrivingLicense drivingLicense) {
-        super(typeOfVehicle,id, brand, model, year, price, rented);
-        this.drivingLicense = drivingLicense;
-    }
-
-    public Motorcycle(Motorcycle motorcycle){
-        super(motorcycle);
-        this.drivingLicense = motorcycle.drivingLicense;
-        this.typeOfVehicle = motorcycle.typeOfVehicle;
+    public Motorcycle(String id, String brand, String model, int year, double price, boolean rented, String category) {
+        super(id, brand, model, year, price, rented);
+        this.category = category;
     }
 
     @Override
-    public Vehicle deepCopy() {
-        return new Motorcycle(this);
+    public String toCSV() {
+        return "Motorcycle;" + id + ";" + brand + ";" + model + ";" + year + ";" + price + ";" + rented + ";" + category;
+    }
+
+    @Override
+    public Vehicle copy() {
+        return new Motorcycle(this.id, this.brand, this.model, this.year, this.price, this.rented, this.category);
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + " | Kat: " + category;
     }
 }

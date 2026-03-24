@@ -1,17 +1,18 @@
 package org.example;
 
-public class Car extends Vehicle {
-    public Car(String typeOfVehicle, String id, String brand, String model, int year, double price, boolean rented) {
-        super(typeOfVehicle,id, brand, model, year, price, rented);
-    }
 
-    public Car(Car car) {
-        super(car);
-        this.typeOfVehicle = car.typeOfVehicle;
+public class Car extends Vehicle {
+    public Car(String id, String brand, String model, int year, double price, boolean rented) {
+        super(id, brand, model, year, price, rented);
     }
 
     @Override
-    public Vehicle deepCopy(){
-        return new Car(this);
+    public String toCSV() {
+        return "Car;" + id + ";" + brand + ";" + model + ";" + year + ";" + price + ";" + rented;
+    }
+
+    @Override
+    public Vehicle copy() {
+        return new Car(this.id, this.brand, this.model, this.year, this.price, this.rented);
     }
 }

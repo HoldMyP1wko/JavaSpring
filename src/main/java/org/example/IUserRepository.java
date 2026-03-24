@@ -2,12 +2,11 @@ package org.example;
 
 import java.util.List;
 
+
 public interface IUserRepository {
-    public User getUser(User user);
-    public List<User> getUsers();
-    public void save();
-    public void load();
-    public void update(User user, String rentedVehicle);
-
-
+    User getUser(String login);
+    List<User> getUsers();
+    void save();
+    void load();
+    void update(User user);
 }
