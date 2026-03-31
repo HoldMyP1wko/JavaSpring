@@ -1,10 +1,13 @@
-package org.example;
+package org.example.services;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.example.models.Role;
+import org.example.models.User;
+import org.example.repositories.UserRepository;
 
-public class Authentication {
-    private IUserRepository userRepository;
+public class AuthService {
+    private UserRepository userRepository;
 
-    public Authentication(IUserRepository userRepository) {
+    public AuthService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 

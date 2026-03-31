@@ -1,8 +1,8 @@
 
-import org.example.Authentication;
-import org.example.IUserRepository;
-import org.example.Role;
-import org.example.User;
+import org.example.services.AuthService;
+import org.example.repositories.UserRepository;
+import org.example.models.Role;
+import org.example.models.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -12,12 +12,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class AuthenticationTest {
 
-    private Authentication authentication;
-    private IUserRepository mockUserRepository;
+    private AuthService authService;
+    private UserRepository mockUserRepository;
 
     @BeforeEach
     void setUp() {
-        mockUserRepository = new IUserRepository() {
+        mockUserRepository = new UserRepository() {
             @Override
             public User getUser(String login) {
                 if ("admin".equals(login)) {
@@ -43,7 +43,7 @@ public class AuthenticationTest {
             }
         };
 
-        authentication = new Authentication(mockUserRepository);
+        authService = new AuthService(mockUserRepository);
     }
 
     @Test
@@ -51,7 +51,7 @@ public class AuthenticationTest {
         String login = "admin";
         String password = "admin123";
 
-        User result = authentication.login(login, password);
+        User result = authService.login(login, password);
 
         assertNotNull(result, "Użytkownik nie powinien być nullem przy poprawnych danych");
         assertEquals("admin", result.getLogin(), "Login powinien się zgadzać");
@@ -63,7 +63,7 @@ public class AuthenticationTest {
         String login = "admin";
         String wrongPassword = "wrongPassword";
 
-        User result = authentication.login(login, wrongPassword);
+        User result = authService.login(login, wrongPassword);
 
         assertNull(result, "Metoda login powinna zwrócić null przy błędnym haśle");
     }
@@ -73,7 +73,7 @@ public class AuthenticationTest {
         String nonExistentLogin = "nonExistentUser";
         String password = "admin123";
 
-        User result = authentication.login(nonExistentLogin, password);
+        User result = authService.login(nonExistentLogin, password);
 
         assertNull(result, "Metoda login powinna zwrócić null, gdy użytkownik nie istnieje w bazie");
     }

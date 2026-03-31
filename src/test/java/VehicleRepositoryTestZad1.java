@@ -1,7 +1,6 @@
-import org.example.Car;
-import org.example.IVehicleRepository;
-import org.example.Vehicle;
-import org.example.VehicleRepository;
+import org.example.models.Car;
+import org.example.repositories.VehicleRepository;
+import org.example.models.Vehicle;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -12,7 +11,7 @@ public class VehicleRepositoryTestZad1 {
 
     @Test
     void getVehiclesShouldReturnDeepCopy() {
-        IVehicleRepository repo = new VehicleRepository();
+        VehicleRepository repo = new org.example.repositories.impl.VehicleRepository();
         List<Vehicle> vehicles1 = repo.getVehicles();
         List<Vehicle> vehicles2  = repo.getVehicles();
         assertNotSame(vehicles1, vehicles2);
@@ -21,7 +20,7 @@ public class VehicleRepositoryTestZad1 {
 
     @Test
     void addingToReturnedListShouldNotChangeRepository() {
-        IVehicleRepository repo = new VehicleRepository();
+        VehicleRepository repo = new org.example.repositories.impl.VehicleRepository();
         List<Vehicle> vehicles = repo.getVehicles();
         int repoSizeBefore = repo.getVehicles().size();
         vehicles.add(new Car("100", "Test", "Test", 2026, 1, false));
@@ -31,7 +30,7 @@ public class VehicleRepositoryTestZad1 {
 
     @Test
     void changingReturnedVehicleShouldNotChangeRepository() {
-        IVehicleRepository repo = new VehicleRepository();
+        VehicleRepository repo = new org.example.repositories.impl.VehicleRepository();
         List<Vehicle> vehicles = repo.getVehicles();
         Vehicle copy = vehicles.get(0);
         boolean rented = repo.getVehicles().get(0).isRented();

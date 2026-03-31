@@ -1,12 +1,17 @@
 package org.example;
 
+import org.example.models.*;
+import org.example.repositories.UserRepository;
+import org.example.repositories.VehicleRepository;
+import org.example.services.AuthService;
+
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        IUserRepository userRepository = new UserRepository();
-        IVehicleRepository vehicleRepository = new VehicleRepository();
-        Authentication auth = new Authentication(userRepository);
+        UserRepository userRepository = new org.example.repositories.impl.UserRepository();
+        VehicleRepository vehicleRepository = new org.example.repositories.impl.VehicleRepository();
+        AuthService auth = new AuthService(userRepository);
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Witaj w systemie wypożyczalni!");
