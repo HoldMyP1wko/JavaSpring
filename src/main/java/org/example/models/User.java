@@ -1,9 +1,14 @@
 package org.example.models;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
 public class User {
     private final String login;
-    private final String password; // Hash
+    private final String password;
     private final Role role;
+    @Setter
     private String rentedVehicleId;
 
     public User(String login, String password, Role role, String rentedVehicleId) {
@@ -20,10 +25,4 @@ public class User {
     public String toCSV() {
         return login + ";" + password + ";" + role.name() + ";" + (rentedVehicleId != null ? rentedVehicleId : "");
     }
-
-    public String getLogin() { return login; }
-    public String getPassword() { return password; }
-    public Role getRole() { return role; }
-    public String getRentedVehicleId() { return rentedVehicleId; }
-    public void setRentedVehicleId(String rentedVehicleId) { this.rentedVehicleId = rentedVehicleId; }
 }

@@ -1,6 +1,7 @@
 import org.example.models.Car;
 import org.example.repositories.VehicleRepository;
 import org.example.models.Vehicle;
+import org.example.repositories.impl.VehicleRepositoryImpl;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -11,7 +12,7 @@ public class VehicleRepositoryTestZad1 {
 
     @Test
     void getVehiclesShouldReturnDeepCopy() {
-        VehicleRepository repo = new org.example.repositories.impl.VehicleRepository();
+        VehicleRepository repo = new VehicleRepositoryImpl();
         List<Vehicle> vehicles1 = repo.getVehicles();
         List<Vehicle> vehicles2  = repo.getVehicles();
         assertNotSame(vehicles1, vehicles2);
@@ -20,7 +21,7 @@ public class VehicleRepositoryTestZad1 {
 
     @Test
     void addingToReturnedListShouldNotChangeRepository() {
-        VehicleRepository repo = new org.example.repositories.impl.VehicleRepository();
+        VehicleRepository repo = new VehicleRepositoryImpl();
         List<Vehicle> vehicles = repo.getVehicles();
         int repoSizeBefore = repo.getVehicles().size();
         vehicles.add(new Car("100", "Test", "Test", 2026, 1, false));
@@ -30,7 +31,7 @@ public class VehicleRepositoryTestZad1 {
 
     @Test
     void changingReturnedVehicleShouldNotChangeRepository() {
-        VehicleRepository repo = new org.example.repositories.impl.VehicleRepository();
+        VehicleRepository repo = new VehicleRepositoryImpl();
         List<Vehicle> vehicles = repo.getVehicles();
         Vehicle copy = vehicles.get(0);
         boolean rented = repo.getVehicles().get(0).isRented();

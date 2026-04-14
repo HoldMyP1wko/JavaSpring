@@ -3,6 +3,7 @@ package org.example;
 import org.example.models.*;
 import org.example.repositories.UserRepository;
 import org.example.repositories.VehicleRepository;
+import org.example.repositories.impl.VehicleRepositoryImpl;
 import org.example.services.AuthService;
 
 import java.util.Scanner;
@@ -10,7 +11,7 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         UserRepository userRepository = new org.example.repositories.impl.UserRepository();
-        VehicleRepository vehicleRepository = new org.example.repositories.impl.VehicleRepository();
+        VehicleRepository vehicleRepository = new VehicleRepositoryImpl();
         AuthService auth = new AuthService(userRepository);
         Scanner scanner = new Scanner(System.in);
 
