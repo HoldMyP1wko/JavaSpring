@@ -3,6 +3,7 @@ package org.example.services;
 import org.example.models.User;
 import org.example.repositories.UserRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public class UserService {
@@ -32,5 +33,8 @@ public class UserService {
 
         System.out.println("Sukces: Użytkownik '" + login + "' został trwale usunięty.");
         return true;
+    }
+    public List<User> getAllUsers(){
+        return userRepo.findAll();
     }
 }

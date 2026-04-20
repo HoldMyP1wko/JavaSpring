@@ -5,6 +5,7 @@ import org.example.models.User;
 import org.example.models.Vehicle;
 import org.example.services.*;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class UI {
@@ -101,7 +102,7 @@ public class UI {
                 System.out.print("ID pojazdu do usunięcia: ");
                 vehicleService.removeVehicle(scanner.nextLine());
             }
-            // Tu możesz dodać kolejne opcje admina
+            case "3" -> displayAllUsers();
         }
     }
 
@@ -137,7 +138,6 @@ public class UI {
 
         Vehicle vehicle = new Vehicle(id, brand, model, year, price, category);
 
-        // Dynamiczne pobieranie atrybutów z JSONa
         config.getAttributes().forEach((attrName, attrType) -> {
             System.out.print("Podaj " + attrName + " (" + attrType + "): ");
             String rawValue = scanner.nextLine();
@@ -153,5 +153,17 @@ public class UI {
         });
 
         vehicleService.addVehicle(vehicle);
+    }
+    private void displayAllUsers(){
+        System.out.println("\n--- LISTA WSZYSTKICH UŻYTKOWNIKÓW ---");
+        List<User> userList = userService.getAllUsers().stream()
+                .filter(user -> user.getRole()!=Role.ADMIN).toList();
+
+        if (!userList.isEmpty()){
+            userList.forEach(user -> System.out.println("Login: " + user.getLogin()));
+        } else {
+            System.out.println("Brak aktywnych użytkowników");
+        }
+
     }
 }

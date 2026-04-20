@@ -9,12 +9,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 public class UserJsonRepository implements UserRepository {
-    private List<User> users = new ArrayList<>();
+    private final List<User> users = new ArrayList<>();
     private final String FILE_NAME = "users.csv";
+
+    public UserJsonRepository(){
+        load();
+    }
 
     @Override
     public List<User> findAll() {
-        return null;
+        return users.stream().toList();
     }
 
     @Override

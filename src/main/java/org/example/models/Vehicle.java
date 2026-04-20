@@ -21,16 +21,6 @@ public class Vehicle {
     @Builder.Default
     private Map<String, Object> additionalAttributes = new HashMap<>();
 
-    public Vehicle(String id, String category, Map<String, Object> additionalAttributes, double price, int year, String model, String brand) {
-        this.id = id;
-        this.category = category;
-        this.additionalAttributes = additionalAttributes;
-        this.price = price;
-        this.year = year;
-        this.model = model;
-        this.brand = brand;
-    }
-
     public Vehicle(String id, String brand, String model, int year, double price, String category) {
         this.id = id;
         this.brand = brand;
@@ -38,6 +28,7 @@ public class Vehicle {
         this.year = year;
         this.price = price;
         this.category = category;
+        this.additionalAttributes = new HashMap<>();
     }
 
     public void addAttribute(String key, Object value) {

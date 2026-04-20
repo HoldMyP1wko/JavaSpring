@@ -30,10 +30,11 @@ public class AuthService {
         if (userRepository.findByLogin(login).isPresent()) {
             return false;
         }
+        Role assignedRole = login.equalsIgnoreCase("admin") ? Role.ADMIN : Role.USER;
 
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
 
-        User newUser = new User(login, hashedPassword, Role.USER, null);
+        User newUser = new User(login, hashedPassword, assignedRole, null);
 
         userRepository.save(newUser);
         return true;
