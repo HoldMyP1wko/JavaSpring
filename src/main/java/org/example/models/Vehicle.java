@@ -1,37 +1,58 @@
 package org.example.models;
 
-import lombok.Setter;
+import lombok.*;
+import java.util.HashMap;
+import java.util.Map;
 
-public abstract class Vehicle {
-    protected String id;
-    protected String brand;
-    protected String model;
-    protected int year;
-    protected double price;
-    @Setter
-    protected boolean rented;
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@ToString
+public class Vehicle {
+    private String id;
+    private String brand;
+    private String model;
+    private int year;
+    private double price;
+    private String category; // np. "Car", "Motorcycle", "Bus"
 
-    public Vehicle(String id, String brand, String model, int year, double price, boolean rented) {
+    @Builder.Default
+    private Map<String, Object> additionalAttributes = new HashMap<>();
+
+    public Vehicle(String id, String category, Map<String, Object> additionalAttributes, double price, int year, String model, String brand) {
+        this.id = id;
+        this.category = category;
+        this.additionalAttributes = additionalAttributes;
+        this.price = price;
+        this.year = year;
+        this.model = model;
+        this.brand = brand;
+    }
+
+    public Vehicle(String id, String brand, String model, int year, double price, String category) {
         this.id = id;
         this.brand = brand;
         this.model = model;
         this.year = year;
         this.price = price;
-        this.rented = rented;
+        this.category = category;
     }
 
-    public abstract String toCSV();
-    public abstract Vehicle copy();
+    public void addAttribute(String key, Object value) {
+        this.additionalAttributes.put(key, value);
+    }
 
-    public String getId() { return id; }
-    public String getBrand() { return brand; }
-    public String getModel() { return model; }
-    public int getYear() { return year; }
-    public double getPrice() { return price; }
-    public boolean isRented() { return rented; }
-
-    @Override
-    public String toString() {
-        return "ID: " + id + " | " + brand + " " + model + " (" + year + ") | Cena: " + price + " | Wypożyczony: " + rented;
+    public Vehicle copy() {
+        return Vehicle.builder()
+                .id(this.id)
+                .brand(this.brand)
+                .model(this.model)
+                .year(this.year)
+                .price(this.price)
+                .category(this.category)
+                .additionalAttributes(new HashMap<>(this.additionalAttributes))
+                .build();
     }
 }

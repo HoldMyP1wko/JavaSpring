@@ -3,11 +3,10 @@ package org.example.models;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
 public class User {
-    private final String login;
-    private final String password;
-    private final Role role;
+    @Getter private final String login;
+    @Getter private final String password;
+    @Getter private final Role role;
     @Setter
     private String rentedVehicleId;
 

@@ -8,7 +8,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-public class UserRepositoryImpl implements UserRepository {
+public class UserJsonRepository implements UserRepository {
     private List<User> users = new ArrayList<>();
     private final String FILE_NAME = "users.csv";
 
@@ -20,7 +20,7 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public Optional<User> findById(String id) {
         return users.stream()
-                .filter(u -> u.getId().equals(id))
+                .filter(u -> u.getLogin().equals(id))
                 .map(User::copy)
                 .findFirst();
     }
@@ -35,7 +35,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User save(User user) {
-        users.removeIf(u -> u.getId().equals(user.getId()));
+        users.removeIf(u -> u.getLogin().equals(user.getLogin()));
 
         User copyToSave = user.copy();
         users.add(copyToSave);
@@ -45,14 +45,12 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public void deleteById(String id) {
-        boolean removed = users.removeIf(u -> u.getId().equals(id));
+    public void deleteByLogin(String login) {
+        boolean removed = users.removeIf(u -> u.getLogin().equals(login));
         if (removed) {
             saveToFile();
         }
     }
-
-    // --- METODY DO ZAPISU/ODCZYTU PLIKÓW ---
 
     private void saveToFile() {
         try (PrintWriter pw = new PrintWriter(new FileWriter(FILE_NAME))) {
@@ -74,14 +72,10 @@ public class UserRepositoryImpl implements UserRepository {
             while ((line = br.readLine()) != null) {
                 String[] p = line.split(";", -1);
 
-                // UWAGA: Format zależy od tego, jak wygląda Twoja metoda toCSV() w klasie User
-                // Założyłem format CSV: id;login;password;role
                 if (p.length >= 4) {
-                    users.add(new User(p[0], p[1], p[2], Role.valueOf(p[3])));
+                    users.add(new User(p[0], p[1], Role.valueOf(p[2]), (p[3])));
                 } else if (p.length == 3) {
-                    // Opcja fallback dla starych danych: jeśli w pliku było tylko login;password;role
-                    // Wtedy login traktujemy też jako tymczasowe ID
-                    users.add(new User(p[0], p[0], p[1], Role.valueOf(p[2])));
+                    users.add(new User(p[0], p[0], Role.valueOf(p[1]), p[2]));
                 }
             }
         } catch (Exception e) {

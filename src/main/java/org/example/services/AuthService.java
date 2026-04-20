@@ -1,21 +1,25 @@
 package org.example.services;
-import org.apache.commons.codec.digest.DigestUtils;
+
 import org.example.models.Role;
 import org.example.models.User;
 import org.example.repositories.UserRepository;
+import org.mindrot.jbcrypt.BCrypt;
+
+import java.util.Optional;
 
 public class AuthService {
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     public AuthService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
     public User login(String login, String password) {
-        User user = userRepository.getUser(login);
-        if (user != null) {
-            String hashedInputPassword = DigestUtils.sha256Hex(password);
-            if (user.getPassword().equals(hashedInputPassword)) {
+        Optional<User> userOptional = userRepository.findByLogin(login);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+
+            if (BCrypt.checkpw(password, user.getPassword())) {
                 return user;
             }
         }
@@ -23,14 +27,15 @@ public class AuthService {
     }
 
     public boolean register(String login, String password) {
-        if (userRepository.getUser(login) != null) {
+        if (userRepository.findByLogin(login).isPresent()) {
             return false;
         }
 
-        String hashedPassword = DigestUtils.sha256Hex(password);
+        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+
         User newUser = new User(login, hashedPassword, Role.USER, null);
 
-        userRepository.addUser(newUser);
+        userRepository.save(newUser);
         return true;
     }
 }
