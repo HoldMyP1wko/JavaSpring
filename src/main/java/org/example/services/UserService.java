@@ -4,37 +4,33 @@ import org.example.models.User;
 import org.example.repositories.UserRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 public class UserService {
-    private UserRepository userRepo;
-    private RentalService rentalService;
+    private final UserRepository userRepo;
+    private final RentalService rentalService;
 
-    public UserService(UserRepository userRepo, RentalService rentalRepo) {
+    public UserService(UserRepository userRepo, RentalService rentalService) {
         this.userRepo = userRepo;
-        this.rentalService = rentalRepo;
+        this.rentalService = rentalService;
     }
 
-    public boolean removeUser(String login) {
-        Optional<User> userOptional = userRepo.findByLogin(login);
-
-        if (userOptional.isEmpty()){
-            System.out.println("Taki użytkownik nie istnieje");
-            return false;
-        }
-
-        if (rentalService.hasActiveRentals(login)) {
-            System.out.println("Nie można usunąć użytkownika który wypożycza pojazd");
-            return false;
-        }
-
-        User userToDelete = userOptional.get();
-        userRepo.deleteByLogin(userToDelete.getLogin());
-
-        System.out.println("Sukces: Użytkownik '" + login + "' został trwale usunięty.");
-        return true;
-    }
-    public List<User> getAllUsers(){
+    public List<User> findAllUsers() {
         return userRepo.findAll();
+    }
+
+    public User findById(String id) {
+        return userRepo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Nie znaleziono użytkownika o ID: " + id));
+    }
+
+    public void deleteUser(String idToDelete, String loggedInUserId) {
+        if (idToDelete.equals(loggedInUserId)) {
+            throw new IllegalArgumentException("Nie możesz usunąć swojego własnego konta!");
+        }
+        if (rentalService.findActiveRentalByUserId(idToDelete).isPresent()) {
+            throw new IllegalStateException("Użytkownik posiada nieoddany pojazd. Najpierw musi go zwrócić.");
+        }
+        findById(idToDelete);
+        userRepo.deleteById(idToDelete);
     }
 }

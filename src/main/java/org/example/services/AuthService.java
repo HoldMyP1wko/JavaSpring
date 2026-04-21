@@ -6,6 +6,7 @@ import org.example.repositories.UserRepository;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public class AuthService {
     private final UserRepository userRepository;
@@ -14,16 +15,9 @@ public class AuthService {
         this.userRepository = userRepository;
     }
 
-    public User login(String login, String password) {
-        Optional<User> userOptional = userRepository.findByLogin(login);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-
-            if (BCrypt.checkpw(password, user.getPassword())) {
-                return user;
-            }
-        }
-        return null;
+    public Optional<User> login(String login, String password) {
+        return userRepository.findByLogin(login)
+                .filter(user -> BCrypt.checkpw(password, user.getPassword()));
     }
 
     public boolean register(String login, String password) {
@@ -31,11 +25,8 @@ public class AuthService {
             return false;
         }
         Role assignedRole = login.equalsIgnoreCase("admin") ? Role.ADMIN : Role.USER;
-
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
-
-        User newUser = new User(login, hashedPassword, assignedRole, null);
-
+        User newUser = new User(UUID.randomUUID().toString(),login, hashedPassword, Role.USER, null);
         userRepository.save(newUser);
         return true;
     }

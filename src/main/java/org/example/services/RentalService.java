@@ -5,8 +5,10 @@ import org.example.repositories.RentalRepository;
 import org.example.repositories.VehicleRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class RentalService {
     private final RentalRepository rentalRepository;
@@ -17,54 +19,47 @@ public class RentalService {
         this.vehicleRepository = vehicleRepository;
     }
 
-    public boolean rentVehicle(String userLogin, String vehicleId) {
-        if (vehicleRepository.findById(vehicleId).isEmpty()) {
-            System.out.println("Błąd: Taki pojazd nie istnieje.");
-            return false;
-        }
-
-        Optional<Rental> activeRental = rentalRepository.findByVehicleIdAndReturnDateIsNull(vehicleId);
-
-        if (activeRental.isPresent()) {
-            System.out.println("Błąd: Pojazd jest już aktualnie wypożyczony.");
-            return false;
-        }
-
-        Rental newRental = new Rental(
-                UUID.randomUUID().toString(),
-                vehicleId,
-                userLogin,
-                LocalDateTime.now().toString(),
-                null
-        );
-
-        rentalRepository.save(newRental);
-        return true;
-    }
-
-    public boolean returnVehicle(String userLogin, String vehicleId) {
-        Optional<Rental> activeRental = rentalRepository.findByVehicleIdAndReturnDateIsNull(vehicleId);
-
-        if (activeRental.isEmpty()) {
-            System.out.println("Błąd: Ten pojazd nie jest obecnie wypożyczony.");
-            return false;
-        }
-
-        Rental rentalToReturn = activeRental.get();
-
-        if (!rentalToReturn.getUserId().equals(userLogin)) {
-            System.out.println("Błąd: Nie możesz zwrócić pojazdu wypożyczonego przez inną osobę.");
-            return false;
-        }
-
-        rentalToReturn.setReturnDateTime(LocalDateTime.now().toString());
-        rentalRepository.save(rentalToReturn);
-
-        return true;
-    }
-
-    public boolean hasActiveRentals(String userLogin) {
+    public boolean vehicleHasActiveRental(String vehicleId) {
         return rentalRepository.findAll().stream()
-                .anyMatch(r -> r.getUserId().equals(userLogin) && r.getReturnDateTime() == null);
+                .anyMatch(r -> r.getVehicleId().equals(vehicleId) && r.getReturnDateTime() == null);
+    }
+
+    public Optional<Rental> findActiveRentalByUserId(String userId) {
+        return rentalRepository.findAll().stream()
+                .filter(r -> r.getUserId().equals(userId) && r.getReturnDateTime() == null)
+                .findFirst();
+    }
+
+    public List<Rental> findUserRentals(String userId) {
+        return rentalRepository.findAll().stream()
+                .filter(r -> r.getUserId().equals(userId))
+                .collect(Collectors.toList());
+    }
+
+    public List<Rental> findAllRentals() {
+        return rentalRepository.findAll();
+    }
+
+    public void rentVehicle(String userId, String vehicleId) {
+        if (vehicleRepository.findById(vehicleId).isEmpty()) {
+            throw new IllegalArgumentException("Taki pojazd nie istnieje.");
+        }
+        if (findActiveRentalByUserId(userId).isPresent()) {
+            throw new IllegalStateException("Masz już aktywne wypożyczenie! Zwróć najpierw obecny pojazd.");
+        }
+        if (vehicleHasActiveRental(vehicleId)) {
+            throw new IllegalStateException("Ten pojazd jest już wypożyczony przez kogoś innego.");
+        }
+
+        Rental rental = new Rental(UUID.randomUUID().toString(), vehicleId, userId, String.valueOf(LocalDateTime.now()), null);
+        rentalRepository.save(rental);
+    }
+
+    public void returnVehicle(String userId) {
+        Rental activeRental = findActiveRentalByUserId(userId)
+                .orElseThrow(() -> new IllegalStateException("Nie masz aktualnie żadnego wypożyczonego pojazdu."));
+
+        activeRental.setReturnDateTime(String.valueOf(LocalDateTime.now()));
+        rentalRepository.save(activeRental);
     }
 }

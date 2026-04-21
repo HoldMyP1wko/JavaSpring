@@ -1,53 +1,52 @@
 package org.example.services;
 
-import org.example.models.Rental;
 import org.example.models.Vehicle;
 import org.example.models.VehicleValidator;
-import org.example.repositories.RentalRepository;
 import org.example.repositories.VehicleRepository;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class VehicleService {
-    private VehicleRepository vehicleRepo;
-    private RentalRepository rentalRepo;
-    private VehicleValidator validator;
+    private final VehicleRepository vehicleRepository;
+    private final RentalService rentalService;
+    private final VehicleValidator vehicleValidator;
 
-    public VehicleService(VehicleRepository vehicleRepo, RentalRepository rentalRepo, VehicleValidator validator) {
-        this.vehicleRepo = vehicleRepo;
-        this.rentalRepo = rentalRepo;
-        this.validator = validator;
+    public VehicleService(VehicleRepository vehicleRepository, RentalService rentalService, VehicleValidator vehicleValidator) {
+        this.vehicleRepository = vehicleRepository;
+        this.rentalService = rentalService;
+        this.vehicleValidator = vehicleValidator;
     }
 
-    public void addVehicle(Vehicle vehicle) {
-        try {
-            validator.validate(vehicle);
-            vehicleRepo.save(vehicle);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Błąd walidacji: " + e.getMessage());
-        }
+    public List<Vehicle> findAll() {
+        return vehicleRepository.findAll();
     }
 
-    public boolean removeVehicle(String vehicleId) {
-        boolean isRented = rentalRepo.findByVehicleIdAndReturnDateIsNull(vehicleId).isPresent();
-        if (isRented) {
-            System.out.println("Nie można usunąć pojazdu, który jest aktualnie wypożyczony.");
-            return false;
-        }
-        vehicleRepo.deleteById(vehicleId);
-        return true;
+    public Vehicle findById(String id) {
+        return vehicleRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Nie znaleziono pojazdu o ID: " + id));
     }
 
-    public List<Vehicle> getAvailableVehicles(){
-        Set<String> rentedVehiclesId = rentalRepo.findAll().stream()
-                .filter(Rental::isActive)
-                .map(Rental::getVehicleId)
-                .collect(Collectors.toSet());
+    public boolean isVehicleRented(String id) {
+        return rentalService.vehicleHasActiveRental(id);
+    }
 
-        return vehicleRepo.findAll().stream().
-                filter(vehicle -> !rentedVehiclesId.contains(vehicle.getId()))
+    public List<Vehicle> findAvailableVehicles() {
+        return vehicleRepository.findAll().stream()
+                .filter(v -> !isVehicleRented(v.getId()))
                 .collect(Collectors.toList());
+    }
+
+    public Vehicle addVehicle(Vehicle vehicle) {
+        vehicleValidator.validate(vehicle);
+        return vehicleRepository.save(vehicle);
+    }
+
+    public void removeVehicle(String vehicleId) {
+        if (isVehicleRented(vehicleId)) {
+            throw new IllegalStateException("Nie można usunąć pojazdu, który jest aktualnie wypożyczony.");
+        }
+        findById(vehicleId);
+        vehicleRepository.deleteById(vehicleId);
     }
 }

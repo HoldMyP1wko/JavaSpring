@@ -2,15 +2,19 @@ package org.example.models;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
+@ToString
 public class User {
+    @Getter private final String id;
     @Getter private final String login;
     @Getter private final String password;
     @Getter private final Role role;
     @Setter
     private String rentedVehicleId;
 
-    public User(String login, String password, Role role, String rentedVehicleId) {
+    public User(String id, String login, String password, Role role, String rentedVehicleId) {
+        this.id = id;
         this.login = login;
         this.password = password;
         this.role = role;
@@ -18,7 +22,7 @@ public class User {
     }
 
     public User copy() {
-        return new User(this.login, this.password, this.role, this.rentedVehicleId);
+        return new User(this.id, this.login, this.password, this.role, this.rentedVehicleId);
     }
 
     public String toCSV() {

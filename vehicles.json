@@ -1,0 +1,37 @@
+[
+  {
+    "id": "0",
+    "brand": "test",
+    "model": "testt",
+    "year": 2000,
+    "price": 1000.0,
+    "category": "Car",
+    "additionalAttributes": {
+      "fuelType": "benzyna"
+    }
+  },
+  {
+    "id": "b60e3dc2-0d57-4478-b9c8-d72ad96e05df",
+    "brand": "BMW",
+    "model": "X5",
+    "year": 2020,
+    "price": 200.0,
+    "plate": "Test123",
+    "category": "Car",
+    "additionalAttributes": {
+      "fuelType": "benzyna"
+    }
+  },
+  {
+    "id": "aa419641-c6c7-4a4f-8f4d-1298e5dfdc5e",
+    "brand": "Test",
+    "model": "Transit",
+    "year": 2020,
+    "price": 100.0,
+    "plate": "Lu1324",
+    "category": "Bus",
+    "additionalAttributes": {
+      "seats": 5
+    }
+  }
+]

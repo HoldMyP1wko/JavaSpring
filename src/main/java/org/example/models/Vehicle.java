@@ -3,6 +3,7 @@ package org.example.models;
 import lombok.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -11,27 +12,22 @@ import java.util.Map;
 @Builder
 @ToString
 public class Vehicle {
-    private String id;
+    @Builder.Default
+    private String id = UUID.randomUUID().toString();
     private String brand;
     private String model;
     private int year;
     private double price;
-    private String category; // np. "Car", "Motorcycle", "Bus"
+    private String plate;
+    private String category;
 
     @Builder.Default
     private Map<String, Object> additionalAttributes = new HashMap<>();
 
-    public Vehicle(String id, String brand, String model, int year, double price, String category) {
-        this.id = id;
-        this.brand = brand;
-        this.model = model;
-        this.year = year;
-        this.price = price;
-        this.category = category;
-        this.additionalAttributes = new HashMap<>();
-    }
-
     public void addAttribute(String key, Object value) {
+        if (this.additionalAttributes == null) {
+            this.additionalAttributes = new HashMap<>();
+        }
         this.additionalAttributes.put(key, value);
     }
 
@@ -42,6 +38,7 @@ public class Vehicle {
                 .model(this.model)
                 .year(this.year)
                 .price(this.price)
+                .plate(this.plate)
                 .category(this.category)
                 .additionalAttributes(new HashMap<>(this.additionalAttributes))
                 .build();

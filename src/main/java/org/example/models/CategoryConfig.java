@@ -10,8 +10,6 @@ import java.util.Map;
 public class CategoryConfig {
 
     private String category;
-
     private Map<String, String> attributes;
-
 
 }

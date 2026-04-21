@@ -8,6 +8,8 @@ import java.util.Map;
 public class VehicleValidator {
     private final VehicleCategoryConfigService configService;
 
+    private static final String PLATE_REGEX = "^[A-Z0-9]{4,8}$";
+
     public VehicleValidator(VehicleCategoryConfigService configService) {
         this.configService = configService;
     }
@@ -17,8 +19,17 @@ public class VehicleValidator {
         if (vehicle.getModel() == null || vehicle.getModel().trim().isEmpty()) throw new IllegalArgumentException("Model nie może być pusty.");
         if (vehicle.getYear() < 1900 || vehicle.getYear() > 2027) throw new IllegalArgumentException("Niepoprawny rok produkcji");
         if (vehicle.getPrice() < 0) throw new IllegalArgumentException("Cena nie może być ujemna.");
+        if (vehicle.getPlate() == null || vehicle.getPlate().trim().isEmpty()){
+            throw new IllegalArgumentException("Numer rejestracyjny nie może być pusty");
+        }
 
-        CategoryConfig config = configService.getConfigByName(vehicle.getCategory());
+        String cleanedPlate = vehicle.getPlate().replaceAll("\\s+", "").toUpperCase();
+
+        if(!cleanedPlate.matches(PLATE_REGEX)) {
+            throw new IllegalArgumentException("Niepoprawny format numeru rejestracyjnego");
+        }
+
+        CategoryConfig config = configService.getByCategory(vehicle.getCategory());
         if (config == null) throw new IllegalArgumentException(
                 "Nieznana kategoria pojazdu: " + vehicle.getCategory());
 

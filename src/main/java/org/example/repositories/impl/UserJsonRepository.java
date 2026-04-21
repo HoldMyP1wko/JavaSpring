@@ -1,30 +1,38 @@
 package org.example.repositories.impl;
 
-import org.example.models.Role;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import org.example.models.User;
 import org.example.repositories.UserRepository;
 
 import java.io.*;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-public class UserJsonRepository implements UserRepository {
-    private final List<User> users = new ArrayList<>();
-    private final String FILE_NAME = "users.csv";
 
-    public UserJsonRepository(){
+public class UserJsonRepository implements UserRepository {
+    private List<User> users = new ArrayList<>();
+    private final String FILE_NAME = "users.json";
+    private final Gson gson;
+
+    public UserJsonRepository() {
+        this.gson = new GsonBuilder().setPrettyPrinting().create();
         load();
     }
 
     @Override
     public List<User> findAll() {
-        return users.stream().toList();
+        return users.stream()
+                .map(User::copy)
+                .toList();
     }
 
     @Override
     public Optional<User> findById(String id) {
         return users.stream()
-                .filter(u -> u.getLogin().equals(id))
+                .filter(u -> u.getId().equals(id))
                 .map(User::copy)
                 .findFirst();
     }
@@ -39,13 +47,21 @@ public class UserJsonRepository implements UserRepository {
 
     @Override
     public User save(User user) {
-        users.removeIf(u -> u.getLogin().equals(user.getLogin()));
+        users.removeIf(u -> u.getId().equals(user.getId()));
 
         User copyToSave = user.copy();
         users.add(copyToSave);
         saveToFile();
 
         return copyToSave;
+    }
+
+    @Override
+    public void deleteById(String id) {
+        boolean removed = users.removeIf(u -> u.getId().equals(id));
+        if (removed) {
+            saveToFile();
+        }
     }
 
     @Override
@@ -56,34 +72,28 @@ public class UserJsonRepository implements UserRepository {
         }
     }
 
+
     private void saveToFile() {
-        try (PrintWriter pw = new PrintWriter(new FileWriter(FILE_NAME))) {
-            for (User u : users) {
-                pw.println(u.toCSV());
-            }
+        try (Writer writer = new FileWriter(FILE_NAME)) {
+            gson.toJson(users, writer);
         } catch (IOException e) {
-            System.err.println("Błąd zapisu użytkowników: " + e.getMessage());
+            System.err.println("Błąd zapisu użytkowników do JSON: " + e.getMessage());
         }
     }
 
     private void load() {
-        users.clear();
         File file = new File(FILE_NAME);
         if (!file.exists()) return;
 
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] p = line.split(";", -1);
+        try (Reader reader = new FileReader(file)) {
+            Type listType = new TypeToken<ArrayList<User>>(){}.getType();
+            List<User> loadedUsers = gson.fromJson(reader, listType);
 
-                if (p.length >= 4) {
-                    users.add(new User(p[0], p[1], Role.valueOf(p[2]), (p[3])));
-                } else if (p.length == 3) {
-                    users.add(new User(p[0], p[0], Role.valueOf(p[1]), p[2]));
-                }
+            if (loadedUsers != null) {
+                this.users = loadedUsers;
             }
         } catch (Exception e) {
-            System.err.println("Błąd odczytu użytkowników: " + e.getMessage());
+            System.err.println("Błąd odczytu użytkowników z JSON: " + e.getMessage());
         }
     }
 }
